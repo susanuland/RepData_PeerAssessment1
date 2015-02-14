@@ -1,21 +1,17 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
-```{r loading}
+
+```r
 setwd("C:/Users/Susan/RepData_PeerAssessment1")
 dat = read.csv("activity.csv", header = T)
-
 ```
 
 ## What is mean total number of steps taken per day?
 Here, we will ignore any missing values in the dataset.
 
-```{r meantotalsteps}
+
+```r
 #We can ignore missing values so create data set with no missing values
 noMiss=dat[complete.cases(dat),]
 
@@ -24,18 +20,23 @@ totalStepsPerDay=with(noMiss,tapply(steps,date,sum))
 
 #make a histogram of the total number of steps taken each day
 hist(totalStepsPerDay,main="Total Number of Steps Taken Per Day")
+```
 
+![](PA1_template_files/figure-html/meantotalsteps-1.png) 
+
+```r
 #Calculate and report the mean and median of the total number of steps taken per day
 avgTotal=mean(totalStepsPerDay[complete.cases(totalStepsPerDay)])
 davgT=formatC(avgTotal,format="d")
 medianTotal=median(totalStepsPerDay[complete.cases(totalStepsPerDay)])
 dmedT=formatC(medianTotal,format="d")
 ```
-The mean of the total number of steps taken per day is `r davgT`.
-The median of the total number of steps taken per day is `r dmedT`.
+The mean of the total number of steps taken per day is 10766.
+The median of the total number of steps taken per day is 10765.
 
 ## What is the average daily activity pattern?
-```{r avgActivityPlot}
+
+```r
 #calculate avg steps taken per interval
 avgStepsPerInterval=with(noMiss,tapply(steps,interval,mean))
 #avgStepsPerInterval(key=names(avgStepsPerInterval),value=avgStepsPerInterval
@@ -46,19 +47,23 @@ intervals=as.numeric(names(avgStepsPerInterval))
 plot(intervals,avgStepsPerInterval,type="l",main="Time Series Plot",xlab="5-minute interval")
 ```
 
+![](PA1_template_files/figure-html/avgActivityPlot-1.png) 
+
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r maxinterval}
+
+```r
 index=match(max(avgStepsPerInterval),avgStepsPerInterval)
 ans=names(avgStepsPerInterval)[index]
 av=max(avgStepsPerInterval)
 avd=formatC(av,format="d")
 ```
-The 5-minute interval at `r ans` contains the maximum number of average steps at `r avd`.
+The 5-minute interval at 835 contains the maximum number of average steps at 206.
 
 ## Imputing missing values
 All missing values in the dataset will be replaced with zeros
-```{r imputeMissing}
+
+```r
 ## Calculate and report the total # of rows with missing values
 rowsMissing=sum(!complete.cases(dat))
 
@@ -68,28 +73,33 @@ filledData[is.na(filledData)]=0
 ```
 Below is a histogram of the total number of steps taken each day for the imputed data
 
-```{r histo}
+
+```r
 #calculate total steps taken per day
 totStepsPerDay=with(filledData,tapply(steps,date,sum))
 #make a histogram of the total number of steps taken each day
 hist(totStepsPerDay,main="Total Number of Steps Taken Per Day (Imputed)")
 ```
 
+![](PA1_template_files/figure-html/histo-1.png) 
 
-```{r stats,echo=TRUE}
+
+
+```r
 impMean=mean(totStepsPerDay)
 dMean=formatC(impMean,format="d")
 impMed=median(totStepsPerDay)
 dMed=formatC(impMed,format="d")
 ```
-The mean of the total number of steps taken per day for the imputed data is `r dMean`.
-The median of the total number of steps taken per day for the imputed data is `r dMed`.
+The mean of the total number of steps taken per day for the imputed data is 9354.
+The median of the total number of steps taken per day for the imputed data is 10395.
 
 We can see that the mean and median values are lower for the imputed data since a large number of zero values were added in to compute the mean and median. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r weekday, echo=TRUE}
+
+```r
 library(timeDate)
 weekDay=isWeekday(as.Date(filledData$date))
 day=factor(weekDay,labels=c("Weekend","Weekday"))
@@ -103,5 +113,7 @@ g+geom_bar(stat="identity")+
   labs(x="interval", y="Number of Steps")+
   guides(fill=FALSE)
 ```
+
+![](PA1_template_files/figure-html/weekday-1.png) 
  
 As seen in the graph, there are differences seen in activity based on weekends and weekdays.  Overall, it appears people are taking more steps on a weekday versus a weekend.
